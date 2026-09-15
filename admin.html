@@ -1,19 +1,924 @@
-{
-  title: "Pengaruh Cahaya terhadap...",
-  authors: ["Ahmad Fauzi", "Budi Santoso", "Citra Dewi"], // array
-  author: "Ahmad Fauzi",        // penulis utama (untuk index.html)
-  category: "IPA",              // IPA / IPS / IPT
-  year: 2025,
-  abstract: "...",
-  preface: "<p>...</p>",        // HTML
-  chapters: {
-    1: "<p>...</p>",
-    2: "<p>...</p>",
-    3: "<p>...</p>",
-    4: "<p>...</p>",
-    5: "<p>...</p>"
-  },
-  references: "<p>...</p>",
-  createdAt: Timestamp,
-  updatedAt: Timestamp
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Jurnal Penelitian NBS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#f7f8fc; --surface:#fff; --ink:#0f172a; --ink-soft:#475569; --ink-mute:#94a3b8;
+  --line:#e2e8f0; --brand:#0d6e5c; --brand-2:#14b8a6; --brand-soft:#ecfdf5;
+  --accent:#f59e0b; --danger:#dc2626; --danger-soft:#fef2f2;
+  --radius:14px;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.06);
+  --shadow-md:0 10px 25px -12px rgba(15,23,42,.15);
+  --shadow-lg:0 24px 48px -20px rgba(13,110,92,.35);
 }
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font:inherit}
+.hidden{display:none!important}
+
+/* ============ LOGIN ============ */
+.login-screen{
+  min-height:100vh; display:grid; place-items:center; padding:24px;
+  background:
+    radial-gradient(1200px 500px at 10% -10%,rgba(20,184,166,.35),transparent 60%),
+    radial-gradient(900px 500px at 90% 10%,rgba(13,110,92,.5),transparent 55%),
+    linear-gradient(135deg,#062b24 0%,#0d6e5c 55%,#0f766e 100%);
+}
+.login-card{
+  width:100%; max-width:420px; background:#fff; border-radius:20px;
+  padding:40px 32px; box-shadow:0 30px 60px -20px rgba(0,0,0,.4);
+  text-align:center;
+}
+.login-badge{
+  width:64px; height:64px; border-radius:50%; margin:0 auto 16px;
+  background:linear-gradient(135deg,#14b8a6,#f59e0b);
+  display:grid; place-items:center; font-weight:800; color:#04221c; font-size:18px;
+  box-shadow:0 10px 25px -10px rgba(20,184,166,.7);
+}
+.login-card h1{
+  font-family:'Lora',serif; font-weight:600; font-size:24px;
+  margin-bottom:6px; letter-spacing:-.01em;
+}
+.login-card p.sub{ color:var(--ink-mute); font-size:14px; margin-bottom:24px; }
+.field{ text-align:left; margin-bottom:16px; }
+.field label{
+  display:block; font-size:12px; font-weight:600; color:var(--ink-soft);
+  text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;
+}
+.field input, .field select, .field textarea{
+  width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px;
+  background:#fbfcfe; font-size:14px; color:var(--ink); transition:.15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{
+  outline:none; border-color:var(--brand-2);
+  box-shadow:0 0 0 4px rgba(20,184,166,.12); background:#fff;
+}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 20px; border-radius:10px; font-size:14px; font-weight:600;
+  transition:.15s; white-space:nowrap;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff;
+  box-shadow:0 10px 20px -10px rgba(13,110,92,.6);
+}
+.btn-primary:hover{ transform:translateY(-1px); box-shadow:0 14px 24px -10px rgba(13,110,92,.7); }
+.btn-primary:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+.btn-ghost{ background:#fff; border:1px solid var(--line); color:var(--ink-soft); }
+.btn-ghost:hover{ background:var(--bg); border-color:var(--ink-mute); }
+.btn-danger{ background:var(--danger-soft); color:var(--danger); border:1px solid #fecaca; }
+.btn-danger:hover{ background:#fee2e2; }
+.btn-sm{ padding:8px 12px; font-size:13px; }
+.btn-block{ width:100%; }
+
+.login-error{
+  color:var(--danger); font-size:13px; margin-top:10px; min-height:18px;
+}
+
+/* ============ DASHBOARD ============ */
+.admin-header{
+  background:#fff; border-bottom:1px solid var(--line);
+  padding:14px 24px; position:sticky; top:0; z-index:40;
+}
+.admin-header-inner{
+  max-width:1200px; margin:0 auto;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.header-brand{ display:flex; align-items:center; gap:12px; }
+.header-badge{
+  width:38px; height:38px; border-radius:10px;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff; display:grid; place-items:center; font-weight:800; font-size:13px;
+}
+.header-title{ font-weight:700; font-size:15px; }
+.header-title small{ display:block; font-weight:500; color:var(--ink-mute); font-size:12px; }
+.header-actions{ display:flex; gap:8px; align-items:center; }
+
+main.admin{
+  max-width:1200px; margin:0 auto; padding:28px 24px 80px;
+}
+
+.stats-grid{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:16px; margin-bottom:24px;
+}
+.stat-card{
+  background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px; box-shadow:var(--shadow-sm);
+}
+.stat-card .label{
+  font-size:11px; font-weight:600; color:var(--ink-mute);
+  text-transform:uppercase; letter-spacing:.1em;
+}
+.stat-card .value{
+  font-family:'Lora',serif; font-size:28px; font-weight:600;
+  color:var(--brand); margin-top:6px; line-height:1;
+}
+
+.toolbar-admin{
+  display:grid; grid-template-columns:1fr auto; gap:12px; margin-bottom:18px;
+}
+@media (max-width:640px){ .toolbar-admin{ grid-template-columns:1fr; } }
+
+.list-journals{ display:flex; flex-direction:column; gap:12px; }
+.journal-row{
+  background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+  padding:16px 20px; display:grid; grid-template-columns:1fr auto;
+  gap:16px; align-items:center; transition:.15s;
+}
+.journal-row:hover{ box-shadow:var(--shadow-md); border-color:transparent; }
+.journal-row h3{
+  font-family:'Lora',serif; font-size:16px; font-weight:600;
+  margin-bottom:6px; line-height:1.35; letter-spacing:-.01em;
+}
+.journal-row .meta{
+  font-size:12.5px; color:var(--ink-soft); display:flex; flex-wrap:wrap; gap:10px;
+}
+.journal-row .meta .tag{
+  background:var(--brand-soft); color:var(--brand);
+  padding:3px 10px; border-radius:999px; font-weight:600;
+  text-transform:uppercase; font-size:11px; letter-spacing:.06em;
+}
+.row-actions{ display:flex; gap:6px; }
+@media (max-width:640px){
+  .journal-row{ grid-template-columns:1fr; }
+  .row-actions{ justify-content:flex-end; }
+}
+
+.empty-state, .loading-state{
+  padding:60px 20px; text-align:center; color:var(--ink-mute); font-size:14px;
+  background:#fff; border:1px dashed var(--line); border-radius:var(--radius);
+}
+.empty-state h4{ color:var(--ink-soft); font-size:16px; margin-bottom:6px; font-weight:600; }
+
+/* ============ MODAL ============ */
+.modal{
+  position:fixed; inset:0; background:rgba(15,23,42,.55);
+  backdrop-filter:blur(4px); z-index:100; padding:24px;
+  display:flex; align-items:flex-start; justify-content:center;
+  overflow-y:auto; animation:fadeIn .18s ease;
+}
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+.modal-panel{
+  background:#fff; border-radius:20px; width:100%; max-width:920px;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.4); overflow:hidden;
+  margin:auto; animation:slideUp .22s ease;
+}
+@keyframes slideUp{ from{transform:translateY(20px);opacity:0} to{transform:none;opacity:1} }
+
+.modal-header{
+  padding:20px 24px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; background:#fff; z-index:2;
+}
+.modal-header h2{
+  font-family:'Lora',serif; font-size:20px; font-weight:600;
+}
+.modal-close{
+  width:36px; height:36px; border-radius:10px;
+  display:grid; place-items:center; color:var(--ink-soft);
+  transition:.15s; font-size:20px;
+}
+.modal-close:hover{ background:var(--bg); color:var(--ink); }
+
+.modal-body{ padding:24px; max-height:calc(100vh - 200px); overflow-y:auto; }
+.modal-footer{
+  padding:16px 24px; border-top:1px solid var(--line);
+  display:flex; justify-content:flex-end; gap:10px;
+  background:#fbfcfe; position:sticky; bottom:0;
+}
+
+.form-section{
+  border:1px solid var(--line); border-radius:12px; padding:16px;
+  margin-bottom:16px; background:#fbfcfe;
+}
+.form-section-title{
+  font-size:12px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--brand); margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.form-section-title::before{
+  content:""; width:4px; height:14px; border-radius:2px;
+  background:linear-gradient(180deg,var(--brand),var(--brand-2));
+}
+.form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-grid.full{ grid-template-columns:1fr; }
+@media (max-width:640px){ .form-grid{ grid-template-columns:1fr; } }
+
+.authors-list{ display:flex; flex-direction:column; gap:10px; }
+.author-row{ display:flex; gap:8px; align-items:center; }
+.author-row .role{
+  flex-shrink:0; font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--brand); background:var(--brand-soft);
+  padding:6px 10px; border-radius:8px; min-width:70px; text-align:center;
+}
+.author-row input{ flex:1; padding:10px 12px; border:1px solid var(--line);
+  border-radius:8px; background:#fff; font-size:14px; }
+.author-row input:focus{ outline:none; border-color:var(--brand-2);
+  box-shadow:0 0 0 3px rgba(20,184,166,.1); }
+.author-row .remove-btn{
+  width:34px; height:34px; border-radius:8px; display:grid; place-items:center;
+  color:var(--danger); background:var(--danger-soft); font-size:16px;
+}
+.author-row .remove-btn:hover{ background:#fee2e2; }
+
+/* ============ RICH TEXT EDITOR ============ */
+.rte{
+  border:1px solid var(--line); border-radius:10px; background:#fff; overflow:hidden;
+  transition:.15s;
+}
+.rte:focus-within{ border-color:var(--brand-2); box-shadow:0 0 0 3px rgba(20,184,166,.1); }
+.rte-toolbar{
+  display:flex; flex-wrap:wrap; gap:2px; padding:6px;
+  background:#f8fafc; border-bottom:1px solid var(--line);
+  align-items:center;
+}
+.rte-toolbar .sep{
+  width:1px; height:20px; background:var(--line); margin:0 4px;
+}
+.rte-toolbar button, .rte-toolbar select{
+  height:30px; min-width:30px; border-radius:6px; padding:0 8px;
+  background:transparent; color:var(--ink-soft); font-size:13px;
+  display:inline-flex; align-items:center; justify-content:center;
+  transition:.12s; border:1px solid transparent;
+}
+.rte-toolbar button:hover{ background:#fff; border-color:var(--line); color:var(--ink); }
+.rte-toolbar select{
+  background:#fff; border:1px solid var(--line); padding:0 6px;
+  font-size:12px; cursor:pointer; width:auto;
+}
+.rte-toolbar select:focus{ outline:none; border-color:var(--brand-2); }
+.rte-content{
+  min-height:120px; padding:14px 16px; font-size:14px;
+  line-height:1.7; outline:none; color:var(--ink);
+}
+.rte-content:empty:before{
+  content:attr(data-placeholder); color:var(--ink-mute); pointer-events:none;
+}
+.rte-content h1{ font-size:22px; margin:12px 0 6px; font-family:'Lora',serif; font-weight:600; }
+.rte-content h2{ font-size:18px; margin:10px 0 6px; font-family:'Lora',serif; font-weight:600; }
+.rte-content h3{ font-size:15px; margin:8px 0 4px; font-weight:700; }
+.rte-content p{ margin:6px 0; }
+.rte-content ul, .rte-content ol{ padding-left:22px; margin:6px 0; }
+.rte-content a{ color:var(--brand-2); text-decoration:underline; }
+.rte-content blockquote{
+  border-left:3px solid var(--brand-2); padding:4px 12px;
+  color:var(--ink-soft); margin:8px 0; font-style:italic;
+}
+
+/* ============ TOAST ============ */
+.toast-container{
+  position:fixed; top:20px; right:20px; z-index:200;
+  display:flex; flex-direction:column; gap:10px;
+}
+.toast{
+  background:#fff; border-radius:12px; padding:14px 18px;
+  box-shadow:var(--shadow-lg); border-left:4px solid var(--brand);
+  font-size:14px; font-weight:500; min-width:240px;
+  animation:slideIn .25s ease; display:flex; align-items:center; gap:10px;
+}
+.toast.error{ border-left-color:var(--danger); }
+.toast.success{ border-left-color:var(--brand-2); }
+.toast.info{ border-left-color:var(--accent); }
+@keyframes slideIn{ from{transform:translateX(40px);opacity:0} to{transform:none;opacity:1} }
+
+.spinner{
+  width:16px; height:16px; border:2px solid rgba(255,255,255,.4);
+  border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite;
+}
+@keyframes spin{ to{transform:rotate(360deg) } }
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN SCREEN ==================== -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-badge">NBS</div>
+    <h1>Panel Admin</h1>
+    <p class="sub">Jurnal Penelitian Ilmiah Nurmilad Boarding School</p>
+    <form id="loginForm">
+      <div class="field">
+        <label for="password">Password Admin</label>
+        <input id="password" type="password" placeholder="Masukkan password" autocomplete="current-password" required />
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" id="loginBtn">
+        <span>Masuk</span>
+      </button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== DASHBOARD ==================== -->
+<div id="dashboard" class="hidden">
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <div class="header-brand">
+        <div class="header-badge">NBS</div>
+        <div class="header-title">
+          Admin Jurnal
+          <small>Panel Kelola Karya Tulis Ilmiah</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a class="btn btn-ghost btn-sm" href="index.html" target="_blank">Lihat Situs</a>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Total Karya</div>
+        <div class="value" id="statTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Bidang</div>
+        <div class="value" id="statCat">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Tahun</div>
+        <div class="value" id="statYear">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Penulis</div>
+        <div class="value" id="statAuthor">0</div>
+      </div>
+    </div>
+
+    <div class="toolbar-admin">
+      <input id="searchAdmin" type="text" placeholder="🔍 Cari judul atau penulis..."
+        style="width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:14px;" />
+      <button class="btn btn-primary" id="addBtn">＋ Tambah Jurnal</button>
+    </div>
+
+    <div class="list-journals" id="listContainer">
+      <div class="loading-state">Memuat data...</div>
+    </div>
+  </main>
+</div>
+
+<!-- ==================== MODAL FORM ==================== -->
+<div class="modal hidden" id="modal">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2 id="modalTitle">Tambah Jurnal</h2>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <form id="journalForm" autocomplete="off">
+        <input type="hidden" id="docId" />
+
+        <!-- INFORMASI UTAMA -->
+        <div class="form-section">
+          <div class="form-section-title">Informasi Utama</div>
+          <div class="form-grid full">
+            <div class="field">
+              <label for="f-title">Judul Karya *</label>
+              <input id="f-title" type="text" placeholder="Contoh: Pengaruh Cahaya Matahari terhadap Pertumbuhan Kacang Hijau" required />
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="f-bidang">Bidang *</label>
+              <select id="f-bidang" required>
+                <option value="">— Pilih Bidang —</option>
+                <option value="IPA">IPA</option>
+                <option value="IPS">IPS</option>
+                <option value="IPT">IPT</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-tahun">Tahun *</label>
+              <input id="f-tahun" type="number" min="2000" max="2100" placeholder="2025" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- PENULIS -->
+        <div class="form-section">
+          <div class="form-section-title">Penulis</div>
+          <div class="authors-list" id="authorsList">
+            <!-- dynamic -->
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" id="addAuthorBtn" style="margin-top:10px;">
+            ＋ Tambah Anggota
+          </button>
+        </div>
+
+        <!-- ABSTRAK -->
+        <div class="form-section">
+          <div class="form-section-title">Abstrak *</div>
+          <div class="field">
+            <textarea id="f-abstrak" rows="4" placeholder="Ringkasan singkat 2–4 kalimat tentang karya tulis..." required style="resize:vertical;"></textarea>
+          </div>
+        </div>
+
+        <!-- KATA PENGANTAR -->
+        <div class="form-section">
+          <div class="form-section-title">Kata Pengantar <span style="color:var(--ink-mute);font-weight:500;text-transform:none;letter-spacing:0;font-size:11px;">(opsional)</span></div>
+          <div class="rte" data-rte="preface">
+            <div class="rte-toolbar"></div>
+            <div class="rte-content" contenteditable="true" data-placeholder="Tulis kata pengantar di sini..."></div>
+          </div>
+        </div>
+
+        <!-- BAB 1 - 5 -->
+        <div class="form-section">
+          <div class="form-section-title">Isi Bab</div>
+          <div id="chaptersContainer"></div>
+        </div>
+
+        <!-- DAFTAR PUSTAKA -->
+        <div class="form-section">
+          <div class="form-section-title">Daftar Pustaka</div>
+          <div class="rte" data-rte="references">
+            <div class="rte-toolbar"></div>
+            <div class="rte-content" contenteditable="true" data-placeholder="Daftar referensi..."></div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancelBtn" type="button">Batal</button>
+      <button class="btn btn-primary" id="saveBtn" type="button">
+        <span id="saveBtnText">Simpan</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastBox"></div>
+
+<script type="module">
+/* ================= FIREBASE ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
+  doc, query, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+/* ================= STATE ================= */
+let journals = [];
+let editingId = null;
+const COLLECTION = "journals";
+
+/* ================= TOAST ================= */
+function toast(msg, type = "success") {
+  const box = document.getElementById('toastBox');
+  const el  = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(40px)';
+    el.style.transition = '.25s';
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
+}
+
+/* ================= LOGIN ================= */
+const loginScreen = document.getElementById('loginScreen');
+const dashboard   = document.getElementById('dashboard');
+const loginForm   = document.getElementById('loginForm');
+const loginError  = document.getElementById('loginError');
+const loginBtn    = document.getElementById('loginBtn');
+
+// Cek sesi tersimpan
+if (sessionStorage.getItem('nbs_admin') === 'ok') {
+  showDashboard();
+}
+
+loginForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  loginError.textContent = '';
+  const pwdInput = document.getElementById('password').value.trim();
+  if (!pwdInput) return;
+
+  const originalHTML = loginBtn.innerHTML;
+  loginBtn.innerHTML = '<div class="spinner"></div>';
+  loginBtn.disabled = true;
+
+  try {
+    const ref = doc(db, 'password', 'pwd');
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      loginError.textContent = 'Konfigurasi password tidak ditemukan.';
+    } else {
+      const correct = String(snap.data().password || '').trim();
+      if (pwdInput === correct) {
+        sessionStorage.setItem('nbs_admin', 'ok');
+        showDashboard();
+      } else {
+        loginError.textContent = 'Password salah. Silakan coba lagi.';
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    loginError.textContent = 'Error: ' + err.message;
+  } finally {
+    loginBtn.innerHTML = originalHTML;
+    loginBtn.disabled = false;
+  }
+});
+
+function showDashboard() {
+  loginScreen.classList.add('hidden');
+  dashboard.classList.remove('hidden');
+  loadJournals();
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('nbs_admin');
+  location.reload();
+});
+
+/* ================= LOAD DATA ================= */
+async function loadJournals() {
+  const c = document.getElementById('listContainer');
+  c.innerHTML = `<div class="loading-state">Memuat data...</div>`;
+  try {
+    const q = query(collection(db, COLLECTION), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    journals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderList(journals);
+    updateStats();
+  } catch (err) {
+    console.error(err);
+    c.innerHTML = `<div class="empty-state"><h4>Gagal memuat</h4><p>${err.message}</p></div>`;
+  }
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent  = journals.length;
+  document.getElementById('statCat').textContent    = new Set(journals.map(j => j.category).filter(Boolean)).size;
+  document.getElementById('statYear').textContent   = new Set(journals.map(j => j.year).filter(Boolean)).size;
+  document.getElementById('statAuthor').textContent = new Set(
+    journals.flatMap(j => j.authors || (j.author ? [j.author] : []))
+  ).size;
+}
+
+function renderList(list) {
+  const c = document.getElementById('listContainer');
+  if (!list.length) {
+    c.innerHTML = `<div class="empty-state"><h4>Belum ada karya</h4><p>Klik "Tambah Jurnal" untuk mengunggah KTI pertama.</p></div>`;
+    return;
+  }
+  c.innerHTML = list.map(j => {
+    const authors = j.authors?.length ? j.authors.join(', ') : (j.author || 'Anonim');
+    return `
+      <div class="journal-row">
+        <div>
+          <h3>${escapeHtml(j.title || 'Tanpa Judul')}</h3>
+          <div class="meta">
+            <span class="tag">${escapeHtml(j.category || '-')}</span>
+            <span>📅 ${j.year || '-'}</span>
+            <span>✍️ ${escapeHtml(authors)}</span>
+          </div>
+        </div>
+        <div class="row-actions">
+          <a class="btn btn-ghost btn-sm" href="baca.html?id=${j.id}" target="_blank">Lihat</a>
+          <button class="btn btn-ghost btn-sm" data-edit="${j.id}">Edit</button>
+          <button class="btn btn-danger btn-sm" data-del="${j.id}">Hapus</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  c.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openModal(b.dataset.edit)));
+  c.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => deleteJournal(b.dataset.del)));
+}
+
+document.getElementById('searchAdmin').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  const filtered = journals.filter(j =>
+    (j.title||'').toLowerCase().includes(q) ||
+    (j.authors?.join(' ')||'').toLowerCase().includes(q) ||
+    (j.author||'').toLowerCase().includes(q)
+  );
+  renderList(filtered);
+});
+
+/* ================= RICH TEXT EDITOR ================= */
+// Toolbar HTML template
+const TOOLBAR_HTML = `
+  <select data-cmd="formatBlock" title="Format">
+    <option value="">Normal</option>
+    <option value="H1">Judul 1</option>
+    <option value="H2">Judul 2</option>
+    <option value="H3">Judul 3</option>
+    <option value="P">Paragraf</option>
+    <option value="BLOCKQUOTE">Kutipan</option>
+  </select>
+  <select data-cmd="fontName" title="Font">
+    <option value="">Font</option>
+    <option value="Plus Jakarta Sans">Sans</option>
+    <option value="Lora">Serif</option>
+    <option value="Georgia">Georgia</option>
+    <option value="Courier New">Mono</option>
+  </select>
+  <select data-cmd="fontSize" title="Ukuran">
+    <option value="">Size</option>
+    <option value="1">Sangat Kecil</option>
+    <option value="2">Kecil</option>
+    <option value="3">Normal</option>
+    <option value="4">Sedang</option>
+    <option value="5">Besar</option>
+    <option value="6">Sangat Besar</option>
+  </select>
+  <span class="sep"></span>
+  <button type="button" data-cmd="bold" title="Bold"><b>B</b></button>
+  <button type="button" data-cmd="italic" title="Italic"><i>I</i></button>
+  <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
+  <button type="button" data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+  <span class="sep"></span>
+  <button type="button" data-cmd="justifyLeft" title="Rata Kiri">⬅</button>
+  <button type="button" data-cmd="justifyCenter" title="Rata Tengah">↔</button>
+  <button type="button" data-cmd="justifyRight" title="Rata Kanan">➡</button>
+  <button type="button" data-cmd="justifyFull" title="Rata Kanan-Kiri">≡</button>
+  <span class="sep"></span>
+  <button type="button" data-cmd="insertUnorderedList" title="Bullet">•</button>
+  <button type="button" data-cmd="insertOrderedList" title="Numbered">1.</button>
+  <button type="button" data-cmd="outdent" title="Kurangi Indent">⇤</button>
+  <button type="button" data-cmd="indent" title="Tambah Indent">⇥</button>
+  <span class="sep"></span>
+  <button type="button" data-cmd="createLink" title="Link">🔗</button>
+  <button type="button" data-cmd="removeFormat" title="Hapus Format">⌫</button>
+  <button type="button" data-cmd="undo" title="Undo">↺</button>
+  <button type="button" data-cmd="redo" title="Redo">↻</button>
+`;
+
+// Pasang toolbar ke setiap .rte
+function initEditors() {
+  document.querySelectorAll('.rte').forEach(rte => {
+    const tb = rte.querySelector('.rte-toolbar');
+    if (tb && !tb.dataset.ready) {
+      tb.innerHTML = TOOLBAR_HTML;
+      tb.dataset.ready = "1";
+    }
+  });
+}
+
+// Event delegation untuk toolbar
+document.addEventListener('mousedown', e => {
+  const btn = e.target.closest('.rte-toolbar button[data-cmd]');
+  const sel = e.target.closest('.rte-toolbar select[data-cmd]');
+  if (!btn && !sel) return;
+  e.preventDefault();
+  const target = btn || sel;
+  const cmd = target.dataset.cmd;
+
+  if (cmd === 'createLink') {
+    const url = prompt('Masukkan URL:', 'https://');
+    if (url) document.execCommand('createLink', false, url);
+    return;
+  }
+  if (sel) {
+    if (target.value) document.execCommand(cmd, false, target.value);
+    target.value = '';
+    return;
+  }
+  document.execCommand(cmd, false, null);
+});
+
+// Init editors pertama kali
+initEditors();
+
+/* ================= CHAPTERS UI ================= */
+const chapterLabels = {
+  1: "Bab 1 — Pendahuluan",
+  2: "Bab 2 — Tinjauan Pustaka",
+  3: "Bab 3 — Metodologi",
+  4: "Bab 4 — Hasil & Pembahasan",
+  5: "Bab 5 — Kesimpulan"
+};
+
+function buildChapters() {
+  const c = document.getElementById('chaptersContainer');
+  c.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const wrap = document.createElement('div');
+    wrap.style.marginBottom = '16px';
+    wrap.innerHTML = `
+      <div class="field">
+        <label>${chapterLabels[i]}</label>
+        <div class="rte" data-rte="bab${i}">
+          <div class="rte-toolbar"></div>
+          <div class="rte-content" contenteditable="true" data-placeholder="Tulis isi ${chapterLabels[i].toLowerCase()}..."></div>
+        </div>
+      </div>
+    `;
+    c.appendChild(wrap);
+  }
+  initEditors();
+}
+buildChapters();
+
+/* ================= AUTHORS UI ================= */
+const authorsList = document.getElementById('authorsList');
+const addAuthorBtn = document.getElementById('addAuthorBtn');
+
+function addAuthorRow(value = '') {
+  const isFirst = authorsList.children.length === 0;
+  const row = document.createElement('div');
+  row.className = 'author-row';
+  row.innerHTML = `
+    <span class="role">${isFirst ? 'Ketua' : 'Anggota'}</span>
+    <input type="text" placeholder="${isFirst ? 'Nama ketua penulis' : 'Nama anggota'}" value="${escapeAttr(value)}" />
+    ${!isFirst ? '<button type="button" class="remove-btn" title="Hapus">✕</button>' : ''}
+  `;
+  if (!isFirst) {
+    row.querySelector('.remove-btn').addEventListener('click', () => {
+      row.remove();
+      refreshAuthorLabels();
+    });
+  }
+  authorsList.appendChild(row);
+  refreshAuthorLabels();
+}
+
+function refreshAuthorLabels() {
+  [...authorsList.children].forEach((row, i) => {
+    row.querySelector('.role').textContent = i === 0 ? 'Ketua' : 'Anggota';
+    const input = row.querySelector('input');
+    input.placeholder = i === 0 ? 'Nama ketua penulis' : 'Nama anggota';
+  });
+}
+
+addAuthorBtn.addEventListener('click', () => addAuthorRow());
+
+/* ================= MODAL ================= */
+const modal      = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const form       = document.getElementById('journalForm');
+
+function openModal(id = null) {
+  editingId = id;
+  form.reset();
+  authorsList.innerHTML = '';
+  clearEditors();
+
+  if (id) {
+    modalTitle.textContent = 'Edit Jurnal';
+    const j = journals.find(x => x.id === id);
+    if (!j) return;
+    document.getElementById('f-title').value = j.title || '';
+    document.getElementById('f-bidang').value = j.category || '';
+    document.getElementById('f-tahun').value = j.year || '';
+    document.getElementById('f-abstrak').value = j.abstract || '';
+    document.getElementById('docId').value = id;
+
+    // Authors
+    const authors = j.authors?.length ? j.authors : (j.author ? [j.author] : ['']);
+    authors.forEach(a => addAuthorRow(a));
+    if (!authors.length) addAuthorRow();
+
+    // Rich content
+    setEditor('preface', j.preface || '');
+    for (let i = 1; i <= 5; i++) setEditor(`bab${i}`, j.chapters?.[i] || j[`bab${i}`] || '');
+    setEditor('references', j.references || j.daftarPustaka || '');
+  } else {
+    modalTitle.textContent = 'Tambah Jurnal';
+    document.getElementById('docId').value = '';
+    addAuthorRow(); // ketua default
+    // default year
+    document.getElementById('f-tahun').value = new Date().getFullYear();
+  }
+
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  modal.classList.add('hidden');
+  document.body.style.overflow = '';
+  editingId = null;
+}
+
+function setEditor(name, html) {
+  const rte = document.querySelector(`.rte[data-rte="${name}"] .rte-content`);
+  if (rte) rte.innerHTML = html;
+}
+function getEditor(name) {
+  const rte = document.querySelector(`.rte[data-rte="${name}"] .rte-content`);
+  return rte ? rte.innerHTML.trim() : '';
+}
+function clearEditors() {
+  document.querySelectorAll('.rte-content').forEach(el => el.innerHTML = '');
+}
+
+document.getElementById('addBtn').addEventListener('click', () => openModal());
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+
+/* ================= SAVE ================= */
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  const saveBtn = document.getElementById('saveBtn');
+  const saveTxt = document.getElementById('saveBtnText');
+
+  const title    = document.getElementById('f-title').value.trim();
+  const bidang   = document.getElementById('f-bidang').value;
+  const tahun    = document.getElementById('f-tahun').value;
+  const abstrak  = document.getElementById('f-abstrak').value.trim();
+
+  const authors = [...authorsList.querySelectorAll('input')]
+    .map(i => i.value.trim()).filter(Boolean);
+
+  if (!title)      return toast('Judul wajib diisi.', 'error');
+  if (!bidang)     return toast('Pilih bidang terlebih dahulu.', 'error');
+  if (!tahun)      return toast('Tahun wajib diisi.', 'error');
+  if (!abstrak)    return toast('Abstrak wajib diisi.', 'error');
+  if (!authors.length) return toast('Minimal 1 penulis.', 'error');
+
+  const payload = {
+    title,
+    authors,
+    author: authors[0], // untuk kompatibilitas index.html
+    category: bidang,
+    year: parseInt(tahun, 10),
+    abstract: abstrak,
+    preface: getEditor('preface'),
+    chapters: {
+      1: getEditor('bab1'),
+      2: getEditor('bab2'),
+      3: getEditor('bab3'),
+      4: getEditor('bab4'),
+      5: getEditor('bab5')
+    },
+    references: getEditor('references'),
+    updatedAt: serverTimestamp()
+  };
+
+  saveBtn.disabled = true;
+  saveTxt.innerHTML = '<div class="spinner"></div>';
+
+  try {
+    if (editingId) {
+      await updateDoc(doc(db, COLLECTION, editingId), payload);
+      toast('Jurnal berhasil diperbarui.', 'success');
+    } else {
+      payload.createdAt = serverTimestamp();
+      await addDoc(collection(db, COLLECTION), payload);
+      toast('Jurnal berhasil ditambahkan.', 'success');
+    }
+    closeModal();
+    await loadJournals();
+  } catch (err) {
+    console.error(err);
+    toast('Gagal menyimpan: ' + err.message, 'error');
+  } finally {
+    saveBtn.disabled = false;
+    saveTxt.textContent = 'Simpan';
+  }
+});
+
+/* ================= DELETE ================= */
+async function deleteJournal(id) {
+  const j = journals.find(x => x.id === id);
+  if (!confirm(`Hapus jurnal "${j?.title || id}"? Tindakan ini tidak bisa dibatalkan.`)) return;
+  try {
+    await deleteDoc(doc(db, COLLECTION, id));
+    toast('Jurnal dihapus.', 'success');
+    await loadJournals();
+  } catch (err) {
+    console.error(err);
+    toast('Gagal menghapus: ' + err.message, 'error');
+  }
+}
+
+/* ================= UTIL ================= */
+function escapeHtml(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escapeAttr(s) {
+  return String(s ?? '').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
