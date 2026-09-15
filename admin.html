@@ -68,7 +68,7 @@ input,select,textarea{font:inherit}
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
   padding:12px 20px; border-radius:10px; font-size:14px; font-weight:600;
-  transition:.15s; white-space:nowrap;
+  transition:.15s; white-space:nowrap; text-decoration:none;
 }
 .btn-primary{
   background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff;
@@ -95,6 +95,7 @@ input,select,textarea{font:inherit}
 .admin-header-inner{
   max-width:1200px; margin:0 auto;
   display:flex; align-items:center; justify-content:space-between; gap:16px;
+  flex-wrap:wrap;
 }
 .header-brand{ display:flex; align-items:center; gap:12px; }
 .header-badge{
@@ -145,6 +146,7 @@ main.admin{
 }
 .journal-row .meta{
   font-size:12.5px; color:var(--ink-soft); display:flex; flex-wrap:wrap; gap:10px;
+  align-items:center;
 }
 .journal-row .meta .tag{
   background:var(--brand-soft); color:var(--brand);
@@ -413,9 +415,7 @@ main.admin{
         <!-- PENULIS -->
         <div class="form-section">
           <div class="form-section-title">Penulis</div>
-          <div class="authors-list" id="authorsList">
-            <!-- dynamic -->
-          </div>
+          <div class="authors-list" id="authorsList"></div>
           <button type="button" class="btn btn-ghost btn-sm" id="addAuthorBtn" style="margin-top:10px;">
             ＋ Tambah Anggota
           </button>
@@ -475,7 +475,16 @@ import {
   getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
   doc, query, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { firebaseConfig } from "./firebase-config.js";
+
+/* ====== FIREBASE CONFIG (inline) ====== */
+const firebaseConfig = {
+  apiKey: "AIzaSyBrM9btMLwDeXcCQlpZvGcb5cdD9j3hbew",
+  authDomain: "kti-nbs.firebaseapp.com",
+  projectId: "kti-nbs",
+  storageBucket: "kti-nbs.firebasestorage.app",
+  messagingSenderId: "431375211363",
+  appId: "1:431375211363:web:155551508e145bb26b9156"
+};
 
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
@@ -526,7 +535,7 @@ loginForm.addEventListener('submit', async e => {
     const ref = doc(db, 'password', 'pwd');
     const snap = await getDoc(ref);
     if (!snap.exists()) {
-      loginError.textContent = 'Konfigurasi password tidak ditemukan.';
+      loginError.textContent = 'Konfigurasi password tidak ditemukan di Firestore.';
     } else {
       const correct = String(snap.data().password || '').trim();
       if (pwdInput === correct) {
@@ -538,7 +547,7 @@ loginForm.addEventListener('submit', async e => {
     }
   } catch (err) {
     console.error(err);
-    loginError.textContent = 'Error: ' + err.message;
+    loginError.textContent = 'Error: ' + (err.code || '') + ' — ' + err.message;
   } finally {
     loginBtn.innerHTML = originalHTML;
     loginBtn.disabled = false;
@@ -568,7 +577,7 @@ async function loadJournals() {
     updateStats();
   } catch (err) {
     console.error(err);
-    c.innerHTML = `<div class="empty-state"><h4>Gagal memuat</h4><p>${err.message}</p></div>`;
+    c.innerHTML = `<div class="empty-state"><h4>Gagal memuat</h4><p>${escapeHtml(err.message)}</p></div>`;
   }
 }
 
@@ -623,7 +632,6 @@ document.getElementById('searchAdmin').addEventListener('input', e => {
 });
 
 /* ================= RICH TEXT EDITOR ================= */
-// Toolbar HTML template
 const TOOLBAR_HTML = `
   <select data-cmd="formatBlock" title="Format">
     <option value="">Normal</option>
@@ -671,7 +679,6 @@ const TOOLBAR_HTML = `
   <button type="button" data-cmd="redo" title="Redo">↻</button>
 `;
 
-// Pasang toolbar ke setiap .rte
 function initEditors() {
   document.querySelectorAll('.rte').forEach(rte => {
     const tb = rte.querySelector('.rte-toolbar');
@@ -682,7 +689,6 @@ function initEditors() {
   });
 }
 
-// Event delegation untuk toolbar
 document.addEventListener('mousedown', e => {
   const btn = e.target.closest('.rte-toolbar button[data-cmd]');
   const sel = e.target.closest('.rte-toolbar select[data-cmd]');
@@ -704,7 +710,6 @@ document.addEventListener('mousedown', e => {
   document.execCommand(cmd, false, null);
 });
 
-// Init editors pertama kali
 initEditors();
 
 /* ================= CHAPTERS UI ================= */
@@ -791,20 +796,17 @@ function openModal(id = null) {
     document.getElementById('f-abstrak').value = j.abstract || '';
     document.getElementById('docId').value = id;
 
-    // Authors
     const authors = j.authors?.length ? j.authors : (j.author ? [j.author] : ['']);
     authors.forEach(a => addAuthorRow(a));
     if (!authors.length) addAuthorRow();
 
-    // Rich content
     setEditor('preface', j.preface || '');
     for (let i = 1; i <= 5; i++) setEditor(`bab${i}`, j.chapters?.[i] || j[`bab${i}`] || '');
     setEditor('references', j.references || j.daftarPustaka || '');
   } else {
     modalTitle.textContent = 'Tambah Jurnal';
     document.getElementById('docId').value = '';
-    addAuthorRow(); // ketua default
-    // default year
+    addAuthorRow();
     document.getElementById('f-tahun').value = new Date().getFullYear();
   }
 
@@ -858,7 +860,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   const payload = {
     title,
     authors,
-    author: authors[0], // untuk kompatibilitas index.html
+    author: authors[0],
     category: bidang,
     year: parseInt(tahun, 10),
     abstract: abstrak,
