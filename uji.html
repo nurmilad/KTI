@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Uji Koneksi Firebase — NBS</title>
+<title>Uji Login Admin — NBS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:wght@600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
@@ -25,73 +24,86 @@ body{
   background:var(--bg); color:var(--ink); line-height:1.6;
   -webkit-font-smoothing:antialiased; min-height:100vh;
 }
-.wrap{max-width:820px;margin:0 auto;padding:40px 24px 80px}
-
-.header{
-  text-align:center;margin-bottom:32px;
-}
+.wrap{max-width:780px;margin:0 auto;padding:40px 24px 80px}
+.header{text-align:center;margin-bottom:32px}
 .header .badge{
   width:64px;height:64px;border-radius:50%;margin:0 auto 16px;
   background:linear-gradient(135deg,#14b8a6,#f59e0b);
   display:grid;place-items:center;font-weight:800;color:#04221c;font-size:18px;
   box-shadow:0 10px 25px -10px rgba(20,184,166,.6);
 }
-.header h1{
-  font-family:'Lora',serif;font-size:28px;font-weight:600;
-  letter-spacing:-.02em;margin-bottom:6px;
-}
-.header p{color:var(--ink-mute);font-size:14px;}
+.header h1{font-family:'Lora',serif;font-size:26px;font-weight:600;letter-spacing:-.02em;margin-bottom:6px}
+.header p{color:var(--ink-mute);font-size:14px}
 
-.overall{
+.card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:20px 24px;margin-bottom:20px;box-shadow:var(--shadow-md);
-  display:flex;align-items:center;gap:16px;
+  padding:24px;margin-bottom:16px;box-shadow:var(--shadow-md);
 }
-.overall .icon{
-  width:48px;height:48px;border-radius:12px;display:grid;place-items:center;
-  font-size:24px;flex-shrink:0;background:#f1f5f9;color:var(--ink-mute);
+.card h2{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h2 .num{
+  width:24px;height:24px;border-radius:8px;background:var(--brand-soft);color:var(--brand);
+  display:grid;place-items:center;font-size:12px;font-weight:800;
 }
-.overall.ok .icon{background:var(--ok-soft);color:var(--ok)}
-.overall.err .icon{background:var(--err-soft);color:var(--err)}
-.overall.warn .icon{background:var(--warn-soft);color:var(--warn)}
-.overall h2{font-size:16px;font-weight:700;margin-bottom:2px}
-.overall p{font-size:13px;color:var(--ink-soft)}
 
-.tests{display:flex;flex-direction:column;gap:10px}
-.test{
-  background:var(--surface);border:1px solid var(--line);border-radius:12px;
-  padding:16px 20px;display:flex;gap:14px;align-items:flex-start;
-  transition:.2s;
+label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+input{
+  width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+  font:inherit;font-size:14px;background:#fbfcfe;color:var(--ink);transition:.15s;
 }
-.test.running{opacity:.7}
-.test .icon{
-  width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
-  font-size:16px;flex-shrink:0;background:#f1f5f9;
+input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 4px rgba(20,184,166,.12);background:#fff}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;
+  transition:.15s;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;
 }
-.test.ok .icon{background:var(--ok-soft)}
-.test.err .icon{background:var(--err-soft)}
-.test.warn .icon{background:var(--warn-soft)}
-.test.info .icon{background:var(--info-soft)}
-.test .body{flex:1;min-width:0}
-.test .body h3{
-  font-size:14px;font-weight:600;margin-bottom:2px;
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+.btn-primary{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
+  box-shadow:0 10px 20px -10px rgba(13,110,92,.6);width:100%;
 }
-.test .body h3 .tag{
-  font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  padding:2px 8px;border-radius:6px;background:#f1f5f9;color:var(--ink-mute);
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink-soft);text-decoration:none;font-size:13px;padding:10px 16px}
+.btn-ghost:hover{background:var(--bg)}
+
+.result{
+  border-radius:12px;padding:16px;margin-top:14px;
+  font-size:13.5px;line-height:1.7;display:none;
 }
-.test.ok .body h3 .tag{background:var(--ok-soft);color:var(--ok)}
-.test.err .body h3 .tag{background:var(--err-soft);color:var(--err)}
-.test.warn .body h3 .tag{background:var(--warn-soft);color:var(--warn)}
-.test.info .body h3 .tag{background:var(--info-soft);color:var(--info)}
-.test .body p{font-size:13px;color:var(--ink-soft);word-break:break-word}
-.test .body .detail{
+.result.show{display:block}
+.result.ok{background:var(--ok-soft);border-left:4px solid var(--ok);color:#14532d}
+.result.err{background:var(--err-soft);border-left:4px solid var(--err);color:#7f1d1d}
+.result.warn{background:var(--warn-soft);border-left:4px solid var(--warn);color:#78350f}
+.result.info{background:var(--info-soft);border-left:4px solid var(--info);color:#1e3a8a}
+.result strong{font-weight:700}
+.result .detail{
   font-family:'JetBrains Mono',monospace;font-size:12px;
-  background:#f8fafc;border:1px solid var(--line);border-radius:8px;
-  padding:8px 10px;margin-top:8px;color:var(--ink-soft);
-  white-space:pre-wrap;word-break:break-word;
-  max-height:180px;overflow-y:auto;
+  background:rgba(0,0,0,.06);border-radius:8px;padding:10px 12px;margin-top:8px;
+  white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;
+}
+.result ul{margin:8px 0 0 18px;padding:0}
+.result li{margin:4px 0}
+
+.steps{list-style:none;padding:0;margin:0}
+.steps li{
+  display:flex;gap:12px;align-items:flex-start;padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+.steps li:last-child{border-bottom:none}
+.steps li .step-icon{
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;
+  display:grid;place-items:center;font-size:14px;background:#f1f5f9;color:var(--ink-mute);
+}
+.steps li.ok .step-icon{background:var(--ok-soft);color:var(--ok)}
+.steps li.err .step-icon{background:var(--err-soft);color:var(--err)}
+.steps li.warn .step-icon{background:var(--warn-soft);color:var(--warn)}
+.steps li .body{flex:1;min-width:0}
+.steps li .body .title{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.steps li .body .desc{font-size:12.5px;color:var(--ink-soft);word-break:break-word}
+.steps li .body .desc code{
+  background:#f1f5f9;padding:2px 6px;border-radius:4px;
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;
 }
 .spinner{
   width:16px;height:16px;border:2px solid #cbd5e1;
@@ -100,30 +112,14 @@ body{
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.actions{
-  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:28px;
+.hint{
+  margin-top:20px;padding:16px 20px;background:#fff7ed;
+  border-left:4px solid var(--warn);border-radius:10px;
+  font-size:13px;color:#7c2d12;line-height:1.7;
 }
-.btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:11px 20px;border-radius:10px;font-size:14px;font-weight:600;
-  transition:.15s;text-decoration:none;cursor:pointer;border:none;font-family:inherit;
-}
-.btn-primary{
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
-  box-shadow:0 10px 20px -10px rgba(13,110,92,.6);
-}
-.btn-primary:hover{transform:translateY(-1px)}
-.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink-soft)}
-.btn-ghost:hover{background:var(--bg);border-color:var(--ink-mute)}
-
-.footer-note{
-  margin-top:32px;padding:16px 20px;background:var(--info-soft);
-  border-left:4px solid var(--info);border-radius:10px;
-  font-size:13px;color:#1e3a8a;line-height:1.7;
-}
-.footer-note strong{color:#1e40af}
-.footer-note code{
-  background:rgba(30,58,138,.1);padding:2px 6px;border-radius:4px;
+.hint strong{color:#9a3412}
+.hint code{
+  background:rgba(154,52,18,.1);padding:2px 6px;border-radius:4px;
   font-family:'JetBrains Mono',monospace;font-size:12px;
 }
 </style>
@@ -134,44 +130,59 @@ body{
 
   <div class="header">
     <div class="badge">NBS</div>
-    <h1>Uji Koneksi Firebase</h1>
-    <p>Diagnostik untuk memastikan aplikasi terhubung ke Firestore dengan benar</p>
+    <h1>Uji Login Admin</h1>
+    <p>Diagnosa kenapa password tidak bisa masuk</p>
   </div>
 
-  <div class="overall" id="overall">
-    <div class="icon">⏳</div>
-    <div>
-      <h2 id="overallTitle">Menjalankan pengujian…</h2>
-      <p id="overallDesc">Mohon tunggu sebentar</p>
+  <!-- INPUT -->
+  <div class="card">
+    <h2><span class="num">1</span> Masukkan password yang Anda coba</h2>
+    <label for="pwd">Password (sama seperti yang diketik di admin.html)</label>
+    <input id="pwd" type="text" placeholder="Contoh: adminkti" autocomplete="off" />
+    <div style="margin-top:14px">
+      <button class="btn btn-primary" id="testBtn">🔍 Uji Login Sekarang</button>
     </div>
+    <div class="result" id="quickResult"></div>
   </div>
 
-  <div class="tests" id="tests"></div>
-
-  <div class="actions">
-    <button class="btn btn-primary" onclick="location.reload()">
-      🔄 Ulangi Pengujian
-    </button>
-    <a class="btn btn-ghost" href="index.html">← Beranda</a>
-    <a class="btn btn-ghost" href="admin.html">Panel Admin</a>
+  <!-- LANGKAH DETAIL -->
+  <div class="card">
+    <h2><span class="num">2</span> Langkah pemeriksaan</h2>
+    <ul class="steps" id="steps">
+      <li id="step-wait">
+        <div class="step-icon">⏳</div>
+        <div class="body">
+          <div class="title">Menunggu Anda klik "Uji Login"</div>
+          <div class="desc">Masukkan password lalu klik tombol di atas.</div>
+        </div>
+      </li>
+    </ul>
   </div>
 
-  <div class="footer-note">
-    <strong>ℹ️ Catatan:</strong> Kalau ada tes yang <strong>gagal</strong> dengan pesan
-    <code>permission-denied</code>, buka <strong>Firebase Console → Firestore → Rules</strong>
-    dan pastikan rules sudah di-<em>Publish</em>. Lihat pesan error di tiap tes untuk detail.
+  <!-- NAV -->
+  <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <a class="btn btn-ghost" href="admin.html">← Kembali ke Admin</a>
+    <a class="btn btn-ghost" href="index.html">Beranda</a>
+  </div>
+
+  <!-- HINT -->
+  <div class="hint">
+    <strong>💡 Kemungkinan penyebab login gagal:</strong>
+    <ul style="margin:8px 0 0 18px">
+      <li><strong>Firestore Rules memblokir baca</strong> → paling umum. Harus ada rule <code>match /password/{doc} { allow read: if true; }</code> dan sudah di-<em>Publish</em>.</li>
+      <li><strong>Nama dokumen salah</strong> → harus <code>password</code> (collection) → <code>pwd</code> (document). Huruf kecil semua.</li>
+      <li><strong>Field salah</strong> → nama field harus <code>password</code> (lowercase).</li>
+      <li><strong>Ada spasi tersembunyi</strong> di value password di Firebase, atau di input Anda.</li>
+      <li><strong>Beda huruf besar/kecil</strong> → <code>adminkti</code> ≠ <code>AdminKTI</code> (case-sensitive).</li>
+    </ul>
   </div>
 
 </div>
 
 <script type="module">
-/* ================= IMPORT FIREBASE ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getFirestore, collection, getDocs, doc, getDoc, query, orderBy, limit
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-/* ================= CONFIG ================= */
 const firebaseConfig = {
   apiKey: "AIzaSyBrM9btMLwDeXcCQlpZvGcb5cdD9j3hbew",
   authDomain: "kti-nbs.firebaseapp.com",
@@ -181,230 +192,261 @@ const firebaseConfig = {
   appId: "1:431375211363:web:155551508e145bb26b9156"
 };
 
-/* ================= STATE ================= */
-let db = null;
-let results = { pass: 0, fail: 0, warn: 0 };
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
 
-/* ================= UI HELPERS ================= */
-const testsEl   = document.getElementById('tests');
-const overallEl = document.getElementById('overall');
+const stepsEl      = document.getElementById('steps');
+const pwdInput     = document.getElementById('pwd');
+const testBtn      = document.getElementById('testBtn');
+const quickResult  = document.getElementById('quickResult');
 
-function addTest(id, title, tag = "MENUNGGU") {
-  const el = document.createElement('div');
-  el.className = 'test running';
-  el.id = `test-${id}`;
-  el.innerHTML = `
-    <div class="icon"><div class="spinner"></div></div>
+/* ============ UI HELPERS ============ */
+function clearSteps() {
+  stepsEl.innerHTML = '';
+}
+
+function addStep(title, desc, state = 'wait') {
+  const icons = { wait: '⏳', ok: '✅', err: '❌', warn: '⚠️' };
+  const li = document.createElement('li');
+  li.className = state === 'wait' ? '' : state;
+  li.innerHTML = `
+    <div class="step-icon">${state === 'wait' ? '<div class="spinner"></div>' : icons[state]}</div>
     <div class="body">
-      <h3>${title} <span class="tag">${tag}</span></h3>
-      <p class="desc">Menjalankan…</p>
+      <div class="title">${title}</div>
+      <div class="desc">${desc}</div>
     </div>
   `;
-  testsEl.appendChild(el);
-  return el;
+  stepsEl.appendChild(li);
+  return li;
 }
 
-function passTest(id, desc, detail = '') {
-  results.pass++;
-  updateTest(id, 'ok', '✅', 'LULUS', desc, detail);
+function updateStep(li, state, title, desc) {
+  const icons = { ok: '✅', err: '❌', warn: '⚠️', wait: '⏳' };
+  li.className = state === 'wait' ? '' : state;
+  li.querySelector('.step-icon').innerHTML =
+    state === 'wait' ? '<div class="spinner"></div>' : icons[state];
+  if (title) li.querySelector('.title').textContent = title;
+  if (desc)  li.querySelector('.desc').innerHTML = desc;
 }
 
-function failTest(id, desc, detail = '') {
-  results.fail++;
-  updateTest(id, 'err', '❌', 'GAGAL', desc, detail);
+function showResult(el, type, html) {
+  el.className = `result show ${type}`;
+  el.innerHTML = html;
 }
 
-function warnTest(id, desc, detail = '') {
-  results.warn++;
-  updateTest(id, 'warn', '⚠️', 'PERINGATAN', desc, detail);
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-function updateTest(id, cls, icon, tag, desc, detail = '') {
-  const el = document.getElementById(`test-${id}`);
-  if (!el) return;
-  el.className = `test ${cls}`;
-  el.querySelector('.icon').innerHTML = `<span style="font-size:16px">${icon}</span>`;
-  el.querySelector('.tag').textContent = tag;
-  el.querySelector('.desc').textContent = desc;
+/* ============ TEST ============ */
+testBtn.addEventListener('click', runTest);
+pwdInput.addEventListener('keydown', e => { if (e.key === 'Enter') runTest(); });
 
-  if (detail) {
-    const old = el.querySelector('.detail');
-    if (old) old.remove();
-    const d = document.createElement('div');
-    d.className = 'detail';
-    d.textContent = detail;
-    el.querySelector('.body').appendChild(d);
-  }
-}
+async function runTest() {
+  const inputPwd = pwdInput.value;
+  quickResult.className = 'result';
+  quickResult.innerHTML = '';
+  clearSteps();
 
-function setOverall(state, title, desc) {
-  overallEl.className = `overall ${state}`;
-  const icons = { ok: '✅', err: '❌', warn: '⚠️', '': '⏳' };
-  overallEl.querySelector('.icon').textContent = icons[state] || '⏳';
-  document.getElementById('overallTitle').textContent = title;
-  document.getElementById('overallDesc').textContent = desc;
-}
-
-/* ================= TESTS ================= */
-
-// TEST 1: Inisialisasi Firebase
-async function testInit() {
-  const el = addTest('init', '1. Inisialisasi Firebase App');
-  try {
-    const app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    await new Promise(r => setTimeout(r, 300));
-    passTest('init', 'Firebase berhasil diinisialisasi',
-      `Project ID: ${firebaseConfig.projectId}\nApp ID: ${firebaseConfig.appId.slice(0, 40)}…`);
-    return true;
-  } catch (err) {
-    failTest('init', 'Gagal inisialisasi Firebase', err.message);
-    return false;
-  }
-}
-
-// TEST 2: Baca dokumen password
-async function testPassword() {
-  const el = addTest('password', '2. Membaca dokumen <password/pwd>');
-  try {
-    const snap = await getDoc(doc(db, 'password', 'pwd'));
-    if (!snap.exists()) {
-      warnTest('password', 'Dokumen password/pwd TIDAK DITEMUKAN',
-        `Struktur yang diharapkan:\n  collection: password\n  document  : pwd\n  field     : password = "adminkti"\n\nBuka Firebase Console → Firestore dan pastikan sudah dibuat.`);
-      return;
-    }
-    const data = snap.data();
-    if (typeof data.password === 'string' && data.password.length > 0) {
-      passTest('password', `Dokumen ditemukan — field 'password' terisi (panjang: ${data.password.length} karakter)`,
-        `Field tersedia: ${Object.keys(data).join(', ')}\n\n(Nilai password tidak ditampilkan demi keamanan)`);
-    } else {
-      warnTest('password', 'Dokumen ditemukan tapi field "password" kosong / bukan string',
-        `Field tersedia: ${Object.keys(data).join(', ') || '(kosong)'}`);
-    }
-  } catch (err) {
-    failTest('password', 'Gagal membaca dokumen password',
-      `Code: ${err.code || '-'}\nMessage: ${err.message}\n\n` +
-      (err.code === 'permission-denied'
-        ? '👉 Kemungkinan: Firestore Rules memblokir akses baca. Buka Firebase Console → Firestore → Rules, lalu izinkan read untuk collection /password.'
-        : ''));
-  }
-}
-
-// TEST 3: Baca koleksi journals
-async function testJournalsRead() {
-  const el = addTest('journals-read', '3. Membaca koleksi <journals>');
-  try {
-    const q = query(collection(db, 'journals'), orderBy('createdAt', 'desc'), limit(5));
-    const snap = await getDocs(q);
-    if (snap.empty) {
-      warnTest('journals-read', 'Koleksi journals dapat dibaca, tapi masih KOSONG',
-        'Belum ada dokumen. Silakan tambah jurnal lewat admin.html.');
-    } else {
-      const titles = snap.docs.map(d => `• ${d.data().title || '(tanpa judul)'}`).join('\n');
-      passTest('journals-read', `Koleksi journals dapat dibaca — ${snap.size} dokumen pertama ditampilkan`,
-        `Contoh judul:\n${titles}`);
-    }
-  } catch (err) {
-    failTest('journals-read', 'Gagal membaca koleksi journals',
-      `Code: ${err.code || '-'}\nMessage: ${err.message}\n\n` +
-      (err.code === 'permission-denied'
-        ? '👉 Firestore Rules memblokir. Izinkan read untuk collection /journals.'
-        : err.code === 'failed-precondition'
-          ? '👉 Query butuh index. Buka link yang muncul di Console browser untuk membuat index.'
-          : ''));
-  }
-}
-
-// TEST 4: Baca seluruh metadata (seperti index.html)
-async function testLoadAll() {
-  const el = addTest('load-all', '4. Memuat data seperti di index.html');
-  try {
-    const q = query(collection(db, 'journals'), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(q);
-    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-    const stats = {
-      total: items.length,
-      categories: new Set(items.map(i => i.category).filter(Boolean)).size,
-      years: new Set(items.map(i => i.year).filter(Boolean)).size,
-      authors: new Set(items.flatMap(i => i.authors || (i.author ? [i.author] : []))).size
-    };
-
-    passTest('load-all', `Berhasil memuat ${stats.total} karya dari Firestore`,
-      `Statistik:\n` +
-      `  Total karya   : ${stats.total}\n` +
-      `  Bidang unik   : ${stats.categories}\n` +
-      `  Tahun unik    : ${stats.years}\n` +
-      `  Penulis unik  : ${stats.authors}`);
-  } catch (err) {
-    failTest('load-all', 'Gagal memuat data lengkap',
-      `Code: ${err.code || '-'}\nMessage: ${err.message}`);
-  }
-}
-
-// TEST 5: Cek schema dokumen (field-field penting)
-async function testSchema() {
-  const el = addTest('schema', '5. Memeriksa struktur field dokumen');
-  try {
-    const q = query(collection(db, 'journals'), limit(1));
-    const snap = await getDocs(q);
-    if (snap.empty) {
-      warnTest('schema', 'Tidak ada dokumen untuk diperiksa', 'Tambahkan jurnal dulu di admin.html.');
-      return;
-    }
-    const d = snap.docs[0].data();
-    const required = ['title', 'authors', 'category', 'year', 'abstract'];
-    const missing = required.filter(f => !(f in d));
-
-    if (missing.length === 0) {
-      passTest('schema', 'Semua field penting tersedia di dokumen',
-        `Field: ${Object.keys(d).join(', ')}`);
-    } else {
-      warnTest('schema', `Field berikut tidak ditemukan: ${missing.join(', ')}`,
-        `Field tersedia: ${Object.keys(d).join(', ')}\n\nIni normal jika dokumen dibuat manual. Tapi pastikan admin.html mengisi semua field.`);
-    }
-  } catch (err) {
-    failTest('schema', 'Gagal memeriksa schema', err.message);
-  }
-}
-
-/* ================= RUN ALL ================= */
-async function runAll() {
-  // Reset
-  testsEl.innerHTML = '';
-  results = { pass: 0, fail: 0, warn: 0 };
-  setOverall('', 'Menjalankan pengujian…', 'Mohon tunggu sebentar');
-
-  // Test 1 - init
-  const okInit = await testInit();
-  if (!okInit) {
-    setOverall('err', 'Gagal: Firebase tidak dapat diinisialisasi',
-      'Periksa kembali firebaseConfig di dalam kode.');
+  // ---- Validasi input kosong ----
+  if (!inputPwd) {
+    showResult(quickResult, 'warn',
+      '<strong>⚠️ Password masih kosong.</strong> Isi dulu kolom di atas, lalu klik "Uji Login".');
     return;
   }
 
-  // Test berurutan
-  await testPassword();
-  await testJournalsRead();
-  await testLoadAll();
-  await testSchema();
+  testBtn.disabled = true;
+  testBtn.textContent = 'Menguji...';
 
-  // Rangkuman
-  const total = results.pass + results.fail + results.warn;
-  if (results.fail === 0 && results.warn === 0) {
-    setOverall('ok', `✅ Semua ${total} tes LULUS!`,
-      'Koneksi Firebase & Firestore berjalan normal. Aplikasi siap digunakan.');
-  } else if (results.fail === 0) {
-    setOverall('warn', `⚠️ ${results.pass} lulus, ${results.warn} peringatan`,
-      'Koneksi OK, tapi ada beberapa hal yang perlu diperiksa. Lihat detail di bawah.');
-  } else {
-    setOverall('err', `❌ ${results.fail} tes gagal (${results.pass} lulus, ${results.warn} peringatan)`,
-      'Periksa detail error di bawah, terutama terkait Firestore Rules.');
+  // ---- STEP 1: Inisialisasi ----
+  const s1 = addStep('Firebase diinisialisasi', 'Menghubungkan ke project <code>kti-nbs</code>…');
+  await new Promise(r => setTimeout(r, 200));
+  updateStep(s1, 'ok', 'Firebase berhasil diinisialisasi',
+    'Project: <code>kti-nbs</code>');
+
+  // ---- STEP 2: Baca dokumen ----
+  const s2 = addStep('Membaca dokumen <code>password/pwd</code>',
+    'Menghubungi Firestore…');
+  let snap;
+  try {
+    snap = await getDoc(doc(db, 'password', 'pwd'));
+    updateStep(s2, 'ok', 'Dokumen <code>password/pwd</code> berhasil dibaca',
+      'Tidak ada masalah koneksi atau rules pada pembacaan.');
+  } catch (err) {
+    // GAGAL BACA
+    let diagnosis = '';
+    if (err.code === 'permission-denied') {
+      diagnosis =
+        '<br><strong>👉 Penyebab paling mungkin: Firestore Rules memblokir baca.</strong><br>' +
+        'Buka <strong>Firebase Console → Firestore Database → Rules</strong>, lalu pastikan ada:<br>' +
+        '<code>match /password/{doc} { allow read: if true; }</code><br>' +
+        'Klik <strong>Publish</strong>, tunggu ~30 detik, lalu ulangi tes.';
+    } else if (err.code === 'unavailable') {
+      diagnosis =
+        '<br><strong>👉 Koneksi ke Firestore gagal.</strong> Cek internet atau adblocker.';
+    } else if (err.code === 'failed-precondition') {
+      diagnosis =
+        '<br><strong>👉 Firestore belum diaktifkan di project ini.</strong> ' +
+        'Buka Firebase Console → Firestore Database → klik "Create database".';
+    } else {
+      diagnosis = '<br><strong>Kode:</strong> <code>' + escapeHtml(err.code || '-') + '</code>';
+    }
+
+    updateStep(s2, 'err', 'GAGAL membaca dokumen',
+      escapeHtml(err.message) + diagnosis);
+
+    showResult(quickResult, 'err',
+      `<strong>❌ Login tidak akan berhasil.</strong><br>` +
+      `Penyebab: pembacaan dokumen <code>password/pwd</code> gagal.<br>` +
+      `<div class="detail">${escapeHtml(err.code || '')}: ${escapeHtml(err.message)}</div>` +
+      diagnosis);
+
+    testBtn.disabled = false;
+    testBtn.textContent = '🔍 Uji Login Sekarang';
+    return;
   }
+
+  // ---- STEP 3: Dokumen ada? ----
+  const s3 = addStep('Memeriksa apakah dokumen ada', 'Menunggu hasil…');
+  await new Promise(r => setTimeout(r, 200));
+  if (!snap.exists()) {
+    updateStep(s3, 'err', 'Dokumen <code>password/pwd</code> TIDAK ADA',
+      'Buat di Firebase Console: Firestore → Start collection <code>password</code> → ' +
+      'Add document dengan ID <code>pwd</code> → Add field <code>password</code> = <code>adminkti</code>');
+
+    showResult(quickResult, 'err',
+      `<strong>❌ Dokumen tidak ditemukan.</strong><br>` +
+      `Anda perlu membuat dokumen di Firestore:<br>` +
+      `• Collection: <code>password</code><br>` +
+      `• Document ID: <code>pwd</code><br>` +
+      `• Field: <code>password</code> = <code>adminkti</code>`);
+    testBtn.disabled = false;
+    testBtn.textContent = '🔍 Uji Login Sekarang';
+    return;
+  }
+
+  const data = snap.data();
+  updateStep(s3, 'ok', 'Dokumen ditemukan',
+    `Field tersedia: <code>${Object.keys(data).map(escapeHtml).join('</code>, <code>')}</code>`);
+
+  // ---- STEP 4: Field 'password' ----
+  const s4 = addStep('Memeriksa field <code>password</code>',
+    'Menunggu hasil…');
+  await new Promise(r => setTimeout(r, 200));
+
+  if (!('password' in data)) {
+    updateStep(s4, 'err', 'Field <code>password</code> TIDAK ADA',
+      `Field yang tersedia: <code>${Object.keys(data).map(escapeHtml).join('</code>, <code>')}</code>`);
+
+    showResult(quickResult, 'err',
+      `<strong>❌ Field <code>password</code> tidak ada di dokumen.</strong><br>` +
+      `Nama field harus persis: <code>password</code> (lowercase semua).<br>` +
+      `Tambahkan field baru di Firebase Console.`);
+    testBtn.disabled = false;
+    testBtn.textContent = '🔍 Uji Login Sekarang';
+    return;
+  }
+
+  const storedPwd = String(data.password);
+  updateStep(s4, 'ok', 'Field <code>password</code> ditemukan',
+    `Panjang nilai: <code>${storedPwd.length}</code> karakter<br>` +
+    `Nilai awal: <code>${escapeHtml(storedPwd.slice(0, 3))}...</code>`);
+
+  // ---- STEP 5: Bandingkan ----
+  const s5 = addStep('Membandingkan password', 'Menunggu hasil…');
+  await new Promise(r => setTimeout(r, 300));
+
+  const trimmedInput  = inputPwd.trim();
+  const trimmedStored = storedPwd.trim();
+
+  // Deteksi spasi tersembunyi
+  const inputHasSpace  = inputPwd !== trimmedInput;
+  const storedHasSpace = storedPwd !== trimmedStored;
+
+  let match = false;
+  if (inputPwd === storedPwd) {
+    match = true;
+  } else if (trimmedInput === trimmedStored) {
+    match = true; // cocok setelah trim
+  }
+
+  // ==== HASIL AKHIR ====
+  if (match && !inputHasSpace && !storedHasSpace) {
+    // SUKSES MURNI
+    updateStep(s5, 'ok', 'Password COCOK',
+      'Login di <code>admin.html</code> seharusnya berhasil. Jika masih gagal, ' +
+      'pastikan Anda mengetik password <em>yang sama persis</em> di admin.html.');
+
+    showResult(quickResult, 'ok',
+      `<strong>✅ Password benar!</strong><br>` +
+      `Login di <code>admin.html</code> seharusnya berhasil.<br><br>` +
+      `Kalau di admin.html masih gagal, kemungkinan:<br>` +
+      `• Salah ketik saat login (huruf besar/kecil, spasi)<br>` +
+      `• Cache browser lama → coba <em>hard refresh</em> (Ctrl+Shift+R)<br>` +
+      `• Buka admin.html lewat file yang sama persis (bukan dari folder lain)`);
+
+  } else if (match && (inputHasSpace || storedHasSpace)) {
+    // COCOK SETELAH TRIM
+    const parts = [];
+    if (inputHasSpace)  parts.push('Input Anda ada spasi di awal/akhir');
+    if (storedHasSpace) parts.push('Nilai di Firebase ada spasi di awal/akhir');
+
+    updateStep(s5, 'warn', 'Password cocok setelah spasi dihapus',
+      parts.join('<br>'));
+
+    showResult(quickResult, 'warn',
+      `<strong>⚠️ Password cocok — TAPI ada spasi tersembunyi.</strong><br>` +
+      `<ul>${parts.map(p => `<li>${p}</li>`).join('')}</ul>` +
+      `<br><strong>Solusi:</strong><br>` +
+      `• Kalau di <em>Firebase</em> yang ada spasi → edit field di Console, hapus spasi.<br>` +
+      `• Kalau di <em>input Anda</em> yang ada spasi → di admin.html, kode sudah pakai <code>.trim()</code>, jadi seharusnya tetap bisa login.<br>` +
+      `  Kalau masih gagal, berarti nilai di Firebase memang punya spasi.`);
+
+  } else {
+    // TIDAK COCOK
+    const diff = findFirstDiff(trimmedInput, trimmedStored);
+    let detailHtml = '';
+    if (diff.index >= 0) {
+      detailHtml =
+        `<br><strong>Titik perbedaan pertama:</strong> karakter ke-${diff.index + 1}<br>` +
+        `• Yang Anda ketik : <code>${escapeHtml(diff.aChar || '(kosong)')}</code><br>` +
+        `• Di Firebase     : <code>${escapeHtml(diff.bChar || '(kosong)')}</code>`;
+    }
+
+    updateStep(s5, 'err', 'Password TIDAK cocok',
+      `Panjang input: <code>${inputPwd.length}</code> | ` +
+      `Panjang di Firebase: <code>${storedPwd.length}</code>${detailHtml}`);
+
+    showResult(quickResult, 'err',
+      `<strong>❌ Password tidak cocok.</strong><br>` +
+      `Password yang Anda ketik berbeda dengan yang tersimpan di Firebase.` +
+      detailHtml +
+      `<br><br><strong>Kemungkinan:</strong><br>` +
+      `<ul>` +
+      `<li>Beda huruf besar/kecil — <code>adminkti</code> ≠ <code>Adminkti</code></li>` +
+      `<li>Ada spasi atau karakter tersembunyi</li>` +
+      `<li>Nilai di Firebase berbeda dari yang Anda kira</li>` +
+      `</ul>` +
+      `<strong>Saran:</strong> Edit field <code>password</code> di Firebase Console, ` +
+      `ketik ulang <code>adminkti</code> dengan hati-hati (tanpa spasi), lalu tes lagi.`);
+  }
+
+  testBtn.disabled = false;
+  testBtn.textContent = '🔍 Uji Login Sekarang';
 }
 
-// Delay sedikit biar animasi terasa
-setTimeout(runAll, 400);
+/* ============ UTIL: cari perbedaan pertama ============ */
+function findFirstDiff(a, b) {
+  const len = Math.max(a.length, b.length);
+  for (let i = 0; i < len; i++) {
+    if (a[i] !== b[i]) {
+      return { index: i, aChar: a[i], bChar: b[i] };
+    }
+  }
+  return { index: -1 };
+}
 </script>
 </body>
 </html>
