@@ -453,7 +453,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
-      getFirestore, collection, getDocs, query, orderBy
+      getFirestore, collection, getDocs
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     /* ====== FIREBASE CONFIG ====== */
@@ -481,12 +481,26 @@
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    /* ====== SORTIR: Tahun terbaru, lalu Judul A-Z ====== */
+    function sortJournals(list) {
+      return [...list].sort((a, b) => {
+        const yearA = parseInt(a.year, 10) || 0;
+        const yearB = parseInt(b.year, 10) || 0;
+        if (yearB !== yearA) return yearB - yearA;
+
+        const titleA = String(a.title || '').toLowerCase();
+        const titleB = String(b.title || '').toLowerCase();
+        return titleA.localeCompare(titleB, 'id', { sensitivity: 'base' });
+      });
+    }
+
     /* ====== AMBIL DATA ====== */
     async function loadData() {
       try {
-        const q = query(collection(db, "journals"), orderBy("createdAt", "desc"));
-        const snap = await getDocs(q);
+        // Ambil semua dulu, sortir di client (biar bisa multi-field)
+        const snap = await getDocs(collection(db, "journals"));
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        allData = sortJournals(allData);
         buildFilters();
         updateStats();
         render(allData);
@@ -566,7 +580,7 @@
       }).join('');
     }
 
-    /* ====== FILTERING ====== */
+    /* ====== FILTERING (TETAP SORTIR) ====== */
     function applyFilter() {
       const q   = elSearch.value.trim().toLowerCase();
       const cat = elCat.value;
@@ -582,7 +596,7 @@
         const matchY = !yr  || String(d.year) === yr;
         return matchQ && matchC && matchY;
       });
-      render(filtered);
+      render(sortJournals(filtered));
     }
 
     elSearch.addEventListener('input', applyFilter);
